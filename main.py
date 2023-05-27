@@ -11,44 +11,11 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 
-
-driver= webdriver.Chrome()
-driver.maximize_window()
-driver.delete_all_cookies()
-driver.implicitly_wait(5)
-driver.get("https://tnreginet.gov.in/portal/webHP?requestType=ApplicationRH&actionVal=homePage&screenId=114&UserLocaleID=en&_csrf=0cab44e9-38ad-4ec3-9de6-5b97acf94a97")
-
-def elem(xpath):
-    ele = driver.find_element(By.XPATH,xpath)
-    ele.click()
-
-elem('//*[@id="8500009"]/a')
-elem('//*[@id="8400001"]/a')
-elem('//*[@id="8400010"]/a')
-
-elem('//*[@id="DOC_WISE"]')
-time.sleep(2)
-
-def dropdown(xpath,option):
-    drop = driver.find_element(By.XPATH,xpath)
-    select = Select(drop)
-    select.select_by_visible_text(option)
-
-dropdown('//*[@id="cmb_SroName"]','Chennai Central Joint I')
-dropdown('//*[@id="cmb_Year"]','2023')
-dropdown('//*[@id="cmb_doc_type"]','Regular Document')
-
-s= driver.find_element(By.XPATH,'//*[@id="captcha"]') # identifying the element to capture the screenshot
-location = s.location # to get the element location
-size = s.size # to get the dimension the element
-driver.save_screenshot("screenshot_tutorialspoint.png") #to get the screenshot of complete page
-x = location['x'] #to get the x axis
-y = location['y'] #to get the y axis
-height = location['y']+size['height'] # to get the length the element
-width = location['x']+size['width']  # to get the width the element
-imgOpen = Image.open("screenshot_tutorialspoint.png") # to open the captured image
-imgOpen = imgOpen.crop((int(x), int(y), int(width), int(height)))  # to crop the captured image to size of that element
-imgOpen.save("scraped.png")  # to save the cropped image
+options = webdriver.ChromeOptions() 
+options.add_argument("download.default_directory=C:/Users/panto/1Python/Knight_Frank/scraped")
+driver = webdriver.Chrome(chrome_options=options)
+#driver.maximize_window()
+driver.set_window_size(1300, 800)
 
 def prediction(file):
     characters = ['2', '3', '4', '5', '6', '7', '8', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'K', 'M', 'N', 'P', 'R', 'W', 'X', 'Y', 'Z']
@@ -137,13 +104,50 @@ def prediction(file):
 
     return pred_texts[0]
 
-text = prediction('scraped.png')
-inputElement = driver.find_element(By.XPATH,'//*[@id="txt_Captcha"]')
-inputElement.send_keys(text)
-inputElement = driver.find_element(By.XPATH,'//*[@id="txt_DocumentNo"]')
-inputElement.send_keys('1')
-inputElement = driver.find_element(By.XPATH,'//*[@id="btn_SearchDoc"]').click()
-inputElement = driver.find_element(By.XPATH,'//*[@id="divGeneratePdf"]/h3/a/b').click()
-inputElement = driver.find_element(By.XPATH,'//*[@id="successPage"]/div[2]/div/div[2]/h2[2]/a').click()
-time.sleep(2)
-driver.close()    #to close the browser
+def elem(xpath):
+    ele = driver.find_element(By.XPATH,xpath)
+    ele.click()
+
+def dropdown(xpath,option):
+    drop = driver.find_element(By.XPATH,xpath)
+    select = Select(drop)
+    select.select_by_visible_text(option)
+
+for i in range(1,11):
+    driver.implicitly_wait(5)
+    driver.delete_all_cookies()
+    driver.get("https://tnreginet.gov.in/portal/webHP?requestType=ApplicationRH&actionVal=homePage&screenId=114&UserLocaleID=en&_csrf=0cab44e9-38ad-4ec3-9de6-5b97acf94a97")
+
+    elem('//*[@id="8500009"]/a')
+    elem('//*[@id="8400001"]/a')
+    elem('//*[@id="8400010"]/a')
+    time.sleep(1)
+    elem('//*[@id="DOC_WISE"]')
+    time.sleep(2)
+
+    dropdown('//*[@id="cmb_SroName"]','Chennai Central Joint I')
+    dropdown('//*[@id="cmb_Year"]','2023')
+    dropdown('//*[@id="cmb_doc_type"]','Regular Document')
+    s= driver.find_element(By.XPATH,'//*[@id="captcha"]') # identifying the element to capture the screenshot
+    location = s.location # to get the element location
+    size = s.size # to get the dimension the element
+    driver.save_screenshot("scraped1.png") #to get the screenshot of complete page
+    x = location['x'] #to get the x axis
+    y = location['y'] #to get the y axis
+    height = location['y']+size['height'] # to get the length the element
+    width = location['x']+size['width']  # to get the width the element
+    imgOpen = Image.open("scraped1.png") # to open the captured image
+    imgOpen = imgOpen.crop((int(x), int(y), int(width), int(height)))  # to crop the captured image to size of that element
+    imgOpen.save("scraped.png")  # to save the cropped image
+    text = prediction('scraped.png')
+    
+    inputElement = driver.find_element(By.XPATH,'//*[@id="txt_DocumentNo"]')
+    inputElement.send_keys(i)
+    inputElement = driver.find_element(By.XPATH,'//*[@id="txt_Captcha"]')
+    inputElement.send_keys(text)
+    inputElement = driver.find_element(By.XPATH,'//*[@id="btn_SearchDoc"]').click()
+    inputElement = driver.find_element(By.XPATH,'//*[@id="divGeneratePdf"]/h3/a/b').click()
+    inputElement = driver.find_element(By.XPATH,'//*[@id="successPage"]/div[2]/div/div[2]/h2[2]/a').click()
+    time.sleep(1)
+driver.close()
+   #to close the browser
